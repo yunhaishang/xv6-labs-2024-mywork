@@ -176,3 +176,24 @@ printfinit(void)
   initlock(&pr.lock, "pr");
   pr.locking = 1;
 }
+
+void 
+backtrace(void)
+{
+  printf("backtrace:\n");
+  uint64 ra, fp, pre_fp;
+  if((fp = r_fp()) == 0){
+    panic("backtrace err\n");
+  }
+  pre_fp = *(uint64 *)(fp - 16);
+
+  while(PGROUNDDOWN(fp) == PGROUNDDOWN(pre_fp)){
+    ra = *(uint64 *)(fp - 8);
+    printf("0x%lx\n", ra);
+    fp = pre_fp;
+    pre_fp = *(uint64 *)(fp - 16);
+  }
+
+  ra = *(uint64 *)(fp - 8);
+  printf("0x%lx\n", ra);
+}

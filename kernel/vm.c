@@ -461,6 +461,10 @@ copyinstr(pagetable_t pagetable, char *dst, uint64 srcva, uint64 max)
 int
 iscowpage(pagetable_t pagetable, uint64 va)
 {
+  if(va >= MAXVA){
+    return 0;
+  }
+
   pte_t *pte = walk(pagetable, va, 0);
 
   if(pte == 0 || (*pte & PTE_V) == 0){
@@ -470,6 +474,7 @@ iscowpage(pagetable_t pagetable, uint64 va)
   if(*pte & PTE_COW){
     return 1;
   }
+
   return 0;
 }
 
@@ -488,10 +493,13 @@ copyonwrite(pagetable_t pagetable, uint64 va)
   if((*pte & PTE_V) == 0)
     panic("copyonwrite: page not present");
   
-  // it was a readonly page previously  
+  // it was a readonly page previously 
   if((*pte & PTE_PRE) == 0){
+    setkilled(myproc());
     return;
   }
+
+  uint64 oldpte = *pte;
 
   *pte = *pte | PTE_W;
   *pte = *pte & ~PTE_COW;
@@ -503,9 +511,13 @@ copyonwrite(pagetable_t pagetable, uint64 va)
     return;
   }
 
-  subref((void *)pa);
+  if((mem = kalloc()) == 0){
+    *pte = oldpte;
+    setkilled(myproc());
+    return;
+  }
 
-  mem = kalloc();
+  subref((void *)pa);
   
   memmove(mem, (char*)pa, PGSIZE);
 

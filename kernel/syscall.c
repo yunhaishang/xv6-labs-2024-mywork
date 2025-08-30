@@ -168,7 +168,7 @@ syscall(void)
     // Use num to lookup the system call function for num, call it,
     // and store its return value in p->trapframe->a0
     p->trapframe->a0 = syscalls[num]();
-    if((p->mask >> num) & 1 || p->mask == 2147483647){
+    if((p->mask >> num) & 1){
       printf("%d: syscall %s -> %ld\n", p->pid, syscallnames[num], p->trapframe->a0);
     }
   } else {

@@ -189,11 +189,11 @@ backtrace(void)
 
   while(PGROUNDDOWN(fp) == PGROUNDDOWN(pre_fp)){
     ra = *(uint64 *)(fp - 8);
-    printf("0x%lx\n", ra);
+    printf("%p\n", (uint64 *)ra);
     fp = pre_fp;
     pre_fp = *(uint64 *)(fp - 16);
   }
 
   ra = *(uint64 *)(fp - 8);
-  printf("0x%lx\n", ra);
+  printf("%p\n", (uint64 *)ra);
 }

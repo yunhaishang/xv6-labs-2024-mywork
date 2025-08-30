@@ -29,8 +29,6 @@ simpletest()
 
   int pid = fork();
 
-  printf("pid=%d\n",getpid());
-
   if(pid < 0){
     printf("fork() failed\n");
     exit(-1);

@@ -597,7 +597,7 @@ printtable(pagetable_t pagetable) {
       for(int j = 2; j >= level; --j){
         printf(" ..");
       }
-      printf("0x%lx: pte 0x%lx pa 0x%lx\n", va, pte, PTE2PA(pte));
+      printf("%p: pte %p pa %p\n", (pte_t *)va, (pte_t *)pte, (pte_t *)PTE2PA(pte));
       
       // if pte is not leaf, recurse
       if((PTE_LEAF(pte)) == 0){
